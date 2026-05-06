@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Penal - Wallace Cavalcante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1a252f; --accent: #d4af37; --success: #27ae60; --error: #e74c3c; --bg: #f0f2f5; --law: #2980b9; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #333; line-height: 1.4; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 4px solid var(--accent); }
+        header h1 { font-size: 1.2rem; text-transform: uppercase; margin-bottom: 5px; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 1rem; flex: 1; }
+        .stats-bar { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; font-weight: 600; }
+        .progress-container { background: #dcdde1; height: 8px; border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease; }
+        .card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        .difficulty-badge { display: inline-block; padding: 3px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
+        .easy { background: #e3f2fd; color: #1976d2; }
+        .medium { background: #fff3e0; color: #f57c00; }
+        .hard { background: #ffebee; color: #d32f2f; }
+        .question-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 1.2rem; color: var(--primary); white-space: pre-line; }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        button.option { padding: 14px; border: 1px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; text-align: left; font-size: 0.95rem; }
+        .feedback { margin-top: 1rem; padding: 12px; border-radius: 8px; font-size: 0.9rem; display: none; }
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .extra-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-tool { border: none; padding: 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+        .btn-help { background: #f1f2f6; color: #57606f; }
+        .btn-law { background: #e1f5fe; color: var(--law); border: 1px solid #b3e5fc; }
+        .info-content { display: none; background: #fafafa; padding: 12px; margin-top: 5px; border-radius: 8px; font-size: 0.85rem; border-left: 3px solid var(--accent); }
+        .law-text { border-left-color: var(--law); font-family: 'Courier New', monospace; background: #f0f8ff; }
+        #next-btn { display: none; margin-top: 20px; width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-finish { margin-top: 10px; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        footer { padding: 1.5rem; text-align: center; font-size: 0.75rem; color: #95a5a6; }
+    </style>
+</head>
+<body>
+
+<header>
+    <p>DIREITO PENAL</p>
+    <h1>Dosimetria da Pena</h1>
+</header>
+
+<div class="container">
+    <div class="stats-bar">
+        <span>Questão <span id="current-q">1</span>/30</span>
+        <span>✅ <span id="score-correct">0</span> | ❌ <span id="score-wrong">0</span></span>
+    </div>
+    <div class="progress-container">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+    <div id="quiz-area"></div>
+    
+    <div id="final-screen" class="card" style="display:none; text-align:center;">
+        <h2>Simulado Concluído!</h2>
+        <div id="final-stats" style="margin: 1.5rem 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <div id="orientation" style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; font-size: 0.9rem; margin-bottom: 20px;"></div>
+        
+        <button onclick="location.reload()" class="btn-finish" style="background:var(--accent); color:var(--primary);">Reiniciar Questões</button>
+        <button onclick="location.href='../index.html'" class="btn-finish" style="background:var(--primary); color:white;">Voltar ao Portal</button>
+    </div>
+</div>
+
+<footer>© 2026 Wallace Cavalcante • Acadêmico de Direito</footer>
+
+<script>
+const quizData = [
+    // FÁCEIS
+    { level: "easy", q: "Quantas circunstâncias judiciais devem ser analisadas pelo juiz na 1ª fase (Art. 59)?", options: ["5", "7", "8", "12"], correct: 2, help: "São os elementos que definem a pena-base.", law: "Art. 59 - O juiz, atendendo à culpabilidade, aos antecedentes, à conduta social, à personalidade do agente, aos motivos, às circunstâncias e consequências do crime...", art: "Art. 59, CP" },
+    { level: "easy", q: "O sistema trifásico de fixação da pena está previsto em qual artigo?", options: ["Art. 59", "Art. 65", "Art. 67", "Art. 68"], correct: 3, help: "Define a ordem: Base -> Intermediária -> Definitiva.", law: "Art. 68 - A pena-base será fixada atendendo-se ao critério do art. 59; em seguida as atenuantes/agravantes; por último causas de aumento/diminuição.", art: "Art. 68, CP" },
+    { level: "easy", q: "Qual o artigo que define o cálculo da multa penal?", options: ["Art. 49", "Art. 60", "Art. 121", "Art. 33"], correct: 1, help: "Trata da situação econômica do réu.", law: "Art. 60 - Na fixação da pena de multa o juiz deve atender, principalmente, à situação econômica do réu.", art: "Art. 60, CP" },
+    { level: "easy", q: "A confissão espontânea perante autoridade é uma circunstância:", options: ["Agravante", "Atenuante", "Causa de aumento", "Qualificadora"], correct: 1, help: "Favorece o réu na segunda fase.", law: "Art. 65, III, d - ter o agente confessado espontaneamente, perante a autoridade, a autoria do crime.", art: "Art. 65, CP" },
+    { level: "easy", q: "O menor de 21 anos na data do fato tem direito a atenuante?", options: ["Não", "Sim, obrigatória", "Apenas em crimes culposos", "Só se for primário"], correct: 1, help: "Critério puramente etário.", law: "Art. 65, I - ser o agente menor de 21 anos na data do fato.", art: "Art. 65, I, CP" },
+    { level: "easy", q: "A reincidência é analisada em qual fase da dosimetria?", options: ["1ª fase", "2ª fase", "3ª fase", "Na execução penal"], correct: 1, help: "É uma circunstância agravante genérica.", law: "Art. 61, I - são circunstâncias que sempre agravam a pena: a reincidência.", art: "Art. 61, CP" },
+    { level: "easy", q: "A pena de multa deve ser paga em quantos dias após o trânsito em julgado?", options: ["5 dias", "10 dias", "15 dias", "30 dias"], correct: 1, help: "Prazo para pagamento voluntário.", law: "Art. 50 - A multa deve ser paga dentro de 10 dias depois de transitada em julgado a sentença.", art: "Art. 50, CP" },
+    { level: "easy", q: "O juiz pode aumentar a multa até o triplo se for ineficaz?", options: ["Não pode", "Sim, conforme Art. 60 §1º", "Apenas para crimes hediondos", "Só se o réu for rico"], correct: 1, help: "Critério de eficácia da pena pecuniária.", law: "Art. 60, § 1º - A pena de multa pode ser aumentada até o triplo se o juiz considerar ineficaz pela situação econômica.", art: "Art. 60, CP" },
+    { level: "easy", q: "A tentativa é uma causa de:", options: ["Aumento de pena", "Diminuição de pena", "Atenuante", "Exclusão de crime"], correct: 1, help: "Diminui de um a dois terços.", law: "Art. 14, Parágrafo único - Salvo disposição em contrário, pune-se a tentativa com a pena correspondente ao crime consumado, diminuída de um a dois terços.", art: "Art. 14, CP" },
+    { level: "easy", q: "Qual destas é uma circunstância judicial (1ª fase)?", options: ["Reincidência", "Confissão", "Personalidade do agente", "Menoridade"], correct: 2, help: "Está no rol do Artigo 59.", law: "Art. 59 - O juiz atendendo à culpabilidade... personalidade do agente...", art: "Art. 59, CP" },
+
+    // MÉDIAS
+    { level: "medium", q: "Inquéritos policiais em curso podem ser usados para aumentar a pena-base?", options: ["Sim", "Não, Súmula 444 STJ", "Somente se houver provas fortes", "Apenas em crimes de roubo"], correct: 1, help: "Respeito à presunção de inocência.", law: "Súmula 444 STJ: É vedado utilizar inquéritos policiais e ações penais em curso para agravar a pena-base.", art: "Súmula 444, STJ" },
+    { level: "medium", q: "A gravidade em abstrato do crime justifica regime mais severo?", options: ["Sim, sempre", "Não, Súmula 718 STF", "Apenas se o juiz quiser", "Somente para o tráfico"], correct: 1, help: "Exige fundamentação concreta.", law: "Súmula 718 STF: A opinião do julgador sobre a gravidade abstrata do crime não constitui motivação idônea para regime mais severo.", art: "Súmula 718, STF" },
+    { level: "medium", q: "Pode-se usar a mesma condenação para maus antecedentes e reincidência?", options: ["Sim", "Não, Bis in Idem", "Apenas em crimes diferentes", "Somente se o réu confessar"], correct: 1, help: "Não se pode punir duas vezes pelo mesmo fato.", law: "Súmula 241 STJ: A reincidência penal não pode ser considerada como circunstância agravante e, simultaneamente, como circunstância judicial.", art: "Súmula 241, STJ" },
+    { level: "medium", q: "As atenuantes podem reduzir a pena abaixo do mínimo legal?", options: ["Sim", "Não, Súmula 231 STJ", "Somente a menoridade", "Somente a confissão"], correct: 1, help: "A segunda fase respeita os limites da lei.", law: "Súmula 231 STJ: A incidência da circunstância atenuante não pode conduzir à redução da pena abaixo do mínimo legal.", art: "Súmula 231, STJ" },
+    { level: "medium", q: "O comportamento da vítima pode prejudicar o réu na fixação da pena?", options: ["Sim", "Não, só serve para beneficiar ou manter neutra", "Apenas em crimes sexuais", "Somente se a vítima for culpada"], correct: 1, help: "Doutrina majoritária: ou beneficia ou é neutro.", law: "Art. 59 - O juiz atendendo ao... comportamento da vítima...", art: "Art. 59, CP" },
+    { level: "medium", q: "O prazo depurador da reincidência é de quantos anos?", options: ["2 anos", "5 anos", "10 anos", "Não prescreve"], correct: 1, help: "Após este prazo o réu volta a ser primário (mas com maus antecedentes).", law: "Art. 64, I - não prevalece a condenação anterior, se entre a data do cumprimento e a infração posterior decorreram mais de 5 anos.", art: "Art. 64, CP" },
+    { level: "medium", q: "No concurso entre reincidência e confissão, o que ocorre no STJ?", options: ["Reincidência prevalece", "Confissão prevalece", "Compensação entre ambas", "O juiz escolhe"], correct: 2, help: "Entendimento consolidado de equivalência.", law: "Jurisprudência STJ: É possível a compensação da agravante da reincidência com a atenuante da confissão espontânea.", art: "Tema Repetitivo 585 STJ" },
+    { level: "medium", q: "Causas de aumento (3ª fase) podem fazer a pena ultrapassar o máximo abstrato?", options: ["Não", "Sim", "Apenas em crimes de sangue", "Somente para reincidentes"], correct: 1, help: "Diferente das agravantes, as causas de aumento não têm limites.", law: "Doutrina: Na 3ª fase, as majorantes podem elevar a pena acima do máximo cominado.", art: "Art. 68, CP" },
+    { level: "medium", q: "A idade superior a 70 anos gera atenuante em qual momento?", options: ["Data do fato", "Data da sentença", "Data do crime", "Data do trânsito"], correct: 1, help: "Beneficia o idoso no momento do julgamento.", law: "Art. 65, I - ser o agente... maior de 70 anos na data da sentença.", art: "Art. 65, I, CP" },
+    { level: "medium", q: "O motivo de relevante valor moral é uma:", options: ["Agravante", "Atenuante", "Causa de aumento", "Qualificadora"], correct: 1, help: "Atenua o juízo de reprovação.", law: "Art. 65, III, a - cometido o crime por motivo de relevante valor social ou moral.", art: "Art. 65, CP" },
+
+    // DIFÍCEIS
+    { level: "hard", q: "Mário tem 3 condenações definitivas. O juiz usa uma para reincidência e as outras para maus antecedentes. Isso é permitido?", options: ["Sim, é possível a distribuição", "Não, é Bis in Idem", "Apenas se os crimes forem iguais", "Somente se forem crimes hediondos"], correct: 0, help: "Se há pluralidade, o juiz pode usar em fases diferentes.", law: "Jurisprudência: Havendo várias condenações, uma pode ser usada na 2ª fase e as demais na 1ª.", art: "STJ/STF" },
+    { level: "hard", q: "O arrependimento posterior (Art. 16) exige que o crime seja sem violência e reparado até:", options: ["A sentença", "O recebimento da denúncia", "O trânsito em julgado", "A prisão"], correct: 1, help: "Marco temporal rigoroso.", law: "Art. 16 - Nos crimes cometidos sem violência... reparado o dano até o recebimento da denúncia ou da queixa...", art: "Art. 16, CP" },
+    { level: "hard", q: "Na dosimetria da multa, se o réu é muito rico, o valor do dia-multa pode chegar a quanto?", options: ["10 salários", "5 vezes o maior salário mínimo", "30 salários", "Sem limite"], correct: 1, help: "Limite máximo do valor unitário do dia-multa.", law: "Art. 49, § 1º - O valor do dia-multa não poderá ser inferior a 1/30 nem superior a 5 vezes o maior salário mínimo.", art: "Art. 49, CP" },
+    { level: "hard", q: "Se o juiz aplicar uma causa de aumento de 1/3 e uma de 1/2 na 3ª fase (Parte Especial), ele:", options: ["Deve somar as duas", "Pode aplicar apenas a que mais aumenta", "Deve multiplicar", "Deve anular uma"], correct: 1, help: "Regra do concurso de causas de aumento da Parte Especial.", law: "Art. 68, Parágrafo único - No concurso de causas de aumento previstas na parte especial, pode o juiz limitar-se a um só aumento, prevalecendo a que mais aumente.", art: "Art. 68, CP" },
+    { level: "hard", q: "A agravante de crime cometido contra ascendente exige que o agente:", options: ["Saiba da condição", "Não saiba", "Seja maior de idade", "Seja reincidente"], correct: 0, help: "Exige o dolo (conhecimento da circunstância).", law: "Art. 61, II, e - contra ascendente, descendente, irmão ou cônjuge.", art: "Art. 61, CP" },
+    { level: "hard", q: "O crime cometido sob coação moral IRRESISTÍVEL gera:", options: ["Atenuante", "Exclusão de culpabilidade", "Causa de diminuição", "Agravante"], correct: 1, help: "Não há crime por falta de culpabilidade.", law: "Art. 22 - Se o fato é cometido sob coação irresistível... só é punível o autor da coação.", art: "Art. 22, CP" },
+    { level: "hard", q: "A coação moral RESISTÍVEL gera:", options: ["Atenuante", "Exclusão de crime", "Absolvição", "Causa de aumento"], correct: 0, help: "Como era resistível, o agente responde, mas com pena menor.", law: "Art. 65, III, c - sob coação a que podia resistir.", art: "Art. 65, CP" },
+    { level: "hard", q: "A agravante de crime cometido para assegurar a execução de outro crime é:", options: ["Subjetiva", "Objetiva", "Fática", "Qualificadora"], correct: 0, help: "Refere-se ao motivo/intenção do agente.", law: "Art. 61, II, b - para facilitar ou assegurar a execução, ocultação, impunidade ou vantagem de outro crime.", art: "Art. 61, CP" },
+    { level: "hard", q: "Se o agente comete novo crime após 6 anos do cumprimento da pena anterior, ele tem:", options: ["Reincidência", "Maus Antecedentes", "Primariedade absoluta", "Indulto"], correct: 1, help: "Perde a reincidência pelo prazo de 5 anos, mas o antecedente é perpétuo para o STF.", law: "Tema 150 STF: As condenações transitadas em julgado há mais de cinco anos podem ser valoradas como maus antecedentes.", art: "Jurisprudência STF" },
+    { level: "hard", q: "Qual o limite máximo das penas privativas de liberdade no Brasil?", options: ["30 anos", "40 anos", "50 anos", "Prisão perpétua"], correct: 1, help: "Alterado pelo Pacote Anticrime.", law: "Art. 75 - O tempo de cumprimento das penas privativas de liberdade não pode ser superior a 40 anos.", art: "Art. 75, CP" }
+];
+
+let cur = 0, ok = 0, err = 0;
+
+function render() {
+    const q = quizData[cur];
+    document.getElementById('quiz-area').innerHTML = `
+        <div class="card">
+            <span class="difficulty-badge ${q.level}">${q.level}</span>
+            <div class="question-text">${q.q}</div>
+            <div class="options-grid">${q.options.map((o, i) => `<button class="option" onclick="check(${i})">${o}</button>`).join('')}</div>
+            <div class="extra-btns">
+                <button class="btn-tool btn-help" onclick="toggle('h')">💡 Dica</button>
+                <button class="btn-tool btn-law" onclick="toggle('l')">⚖️ Lei Seca</button>
+            </div>
+            <div id="h" class="info-content"><i>${q.help}</i></div>
+            <div id="l" class="info-content law-text"><b>${q.art}:</b><br>${q.law}</div>
+            <div id="fb" class="feedback"></div>
+            <button id="next-btn" onclick="next()">Próxima Questão</button>
+        </div>`;
+}
+
+window.toggle = (id) => {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+window.check = (idx) => {
+    const q = quizData[cur], fb = document.getElementById('fb');
+    document.querySelectorAll('.option').forEach(b => b.disabled = true);
+    fb.style.display = 'block';
+    if(idx === q.correct) {
+        ok++; fb.className = 'feedback correct'; fb.innerHTML = `<b>Correto!</b>`;
+    } else {
+        err++; fb.className = 'feedback incorrect'; fb.innerHTML = `<b>Errado!</b> A resposta é: ${q.options[q.correct]}`;
+    }
+    document.getElementById('score-correct').innerText = ok;
+    document.getElementById('score-wrong').innerText = err;
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+window.next = () => {
+    cur++;
+    if(cur < quizData.length) {
+        document.getElementById('progress').style.width = (cur/quizData.length*100)+'%';
+        document.getElementById('current-q').innerText = cur+1;
+        render();
+    } else {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('final-screen').style.display = 'block';
+        document.getElementById('final-stats').innerText = `Acertos: ${ok} | Erros: ${err}`;
+        let m = ok >= 25 ? "Excepcional! Você domina a dosimetria." : ok >= 15 ? "Bom desempenho, continue praticando." : "Foque na leitura dos Artigos 59 e 68.";
+        document.getElementById('orientation').innerHTML = `<b>Mensagem:</b> ${m}`;
+    }
+}
+render();
+</script>
+</body>
+</html>

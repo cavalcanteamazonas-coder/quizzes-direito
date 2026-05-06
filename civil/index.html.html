@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quiz Direito Civil - Wallace Cavalcante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2c3e50; --accent: #d4af37; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; --law: #8e44ad; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #333; line-height: 1.4; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 4px solid var(--accent); }
+        header h1 { font-size: 1.2rem; text-transform: uppercase; margin-bottom: 5px; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 1rem; flex: 1; }
+        .stats-bar { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; font-weight: 600; }
+        .progress-container { background: #dcdde1; height: 8px; border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease; }
+        .card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        .difficulty-badge { display: inline-block; padding: 3px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
+        .easy { background: #e8f5e9; color: #2e7d32; }
+        .medium { background: #fff3e0; color: #f57c00; }
+        .hard { background: #fce4ec; color: #c2185b; }
+        .question-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 1.2rem; color: var(--primary); white-space: pre-line; }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        button.option { padding: 14px; border: 1px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; text-align: left; font-size: 0.95rem; transition: 0.2s; }
+        button.option:active { background: #f8f9fa; transform: scale(0.98); }
+        .feedback { margin-top: 1rem; padding: 12px; border-radius: 8px; font-size: 0.9rem; display: none; }
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .extra-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-tool { border: none; padding: 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-help { background: #f1f2f6; color: #57606f; }
+        .btn-law { background: #f3e5f5; color: var(--law); border: 1px solid #e1bee7; }
+        .info-content { display: none; background: #fafafa; padding: 12px; margin-top: 5px; border-radius: 8px; font-size: 0.85rem; border-left: 3px solid var(--accent); animation: fadeIn 0.3s; }
+        .law-text { border-left-color: var(--law); font-family: 'Courier New', Courier, monospace; background: #fdf7ff; }
+        #next-btn { display: none; margin-top: 20px; width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        footer { padding: 1.5rem; text-align: center; font-size: 0.75rem; color: #95a5a6; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <p>DIREITO CIVIL • OBRIGAÇÕES</p>
+    <h1>Simulado de Fixação</h1>
+    <p>Autor: <strong>Wallace Cavalcante</strong></p>
+</header>
+
+<div class="container">
+    <div class="stats-bar">
+        <span>Questão <span id="current-q">1</span>/20</span>
+        <span>✅ <span id="score-correct">0</span> | ❌ <span id="score-wrong">0</span></span>
+    </div>
+    <div class="progress-container">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+    <div id="quiz-area"></div>
+    <div id="final-screen" class="card" style="display:none; text-align:center;">
+        <h2>Fim do Simulado!</h2>
+        <div id="final-stats" style="margin: 1.5rem 0; font-size: 1.2rem; font-weight: bold;"></div>
+        <div id="orientation" style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; font-size: 0.9rem;"></div>
+        <button onclick="location.href='../index.html'" style="margin-top:20px; width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; cursor:pointer;">Voltar ao Portal</button>
+    </div>
+</div>
+
+<footer>© 2026 Wallace Cavalcante • Material Acadêmico</footer>
+
+<script>
+const quizData = [
+    { 
+        level: "easy", 
+        q: "Na cessão de crédito, a transferência abrange todos os acessórios da obrigação?", 
+        options: ["Não, apenas o crédito principal.", "Sim, salvo disposição em contrário.", "Somente se houver escritura pública.", "Apenas os juros, excluindo garantias."], 
+        correct: 1, 
+        help: "Pense no crédito como um pacote: o que está grudado nele vai junto.", 
+        law: "Art. 287. Na cessão de um crédito abrangem-se todos os seus acessórios.", 
+        art: "Art. 287, CC" 
+    },
+    { 
+        level: "easy", 
+        q: "A assunção de dívida exige o consentimento do credor?", 
+        options: ["Não, basta o acordo entre devedores.", "Sim, o consentimento deve ser expresso.", "Não, o silêncio do credor vale como aceite.", "Apenas se a dívida for superior a 10 salários."], 
+        correct: 1, 
+        help: "O credor precisa saber quem vai lhe pagar para garantir que receberá.", 
+        law: "Art. 299. É facultado a terceiro assumir a obrigação do devedor, com consentimento expresso do credor...", 
+        art: "Art. 299, CC" 
+    },
+    { 
+        level: "medium", 
+        q: "Qual o efeito da assunção de dívida sobre as garantias especiais dadas pelo devedor primitivo ao credor?", 
+        options: ["Elas se mantêm automaticamente.", "Elas se extinguem, salvo assentimento do devedor.", "Elas dobram de valor.", "Não há previsão legal."], 
+        correct: 1, 
+        help: "Se quem deu a garantia saiu da dívida, a garantia 'cai', a menos que ele concorde em manter.", 
+        law: "Art. 300. Salvo assentimento expresso do devedor primitivo, consideram-se extintas, a partir da assunção da dívida, as garantias especiais por ele originariamente dadas ao credor.", 
+        art: "Art. 300, CC" 
+    },
+    { 
+        level: "easy", 
+        q: "Um terceiro não interessado pode pagar a dívida em seu próprio nome?", 
+        options: ["Não, apenas parentes podem.", "Sim, e tem direito a reembolso.", "Sim, mas não se sub-roga nos direitos.", "Não, o pagamento é nulo."], 
+        correct: 2, 
+        help: "Quem paga por amizade ou altruísmo recupera o valor, mas não vira o 'novo credor'.", 
+        law: "Art. 305. O terceiro não interessado, que paga a dívida em seu próprio nome, tem direito a reembolsar-se do que pagar; mas não se sub-roga nos direitos do credor.", 
+        art: "Art. 305, CC" 
+    },
+    { 
+        level: "medium", 
+        q: "Se o credor recusar receber o pagamento sem justa causa, o devedor pode:", 
+        options: ["Deixar de pagar.", "Requerer a consignação do pagamento.", "Pedir a prisão do credor.", "Aumentar os juros."], 
+        correct: 1, 
+        help: "A consignação serve para liberar o devedor quando o credor 'faz graça'.", 
+        law: "Art. 335. A consignação tem lugar: I - se o credor não puder, ou, sem justa causa, recusar receber o pagamento...", 
+        art: "Art. 335, I, CC" 
+    },
+    { 
+        level: "hard", 
+        q: "Ocorre a sub-rogação legal em favor do herdeiro que paga a dívida do espólio com seus próprios recursos?", 
+        options: ["Certo", "Errado"], 
+        correct: 0, 
+        help: "Ele tinha interesse jurídico para evitar a perda da herança.", 
+        law: "Art. 346. A sub-rogação opera-se, de pleno direito, em favor: (...) III - do terceiro interessado, que paga a dívida pela qual era ou podia ser obrigado, no todo ou em parte.", 
+        art: "Art. 346, III, CC" 
+    },
+    { 
+        level: "easy", 
+        q: "A dação em pagamento ocorre quando o credor aceita receber prestação diversa da que lhe era devida.", 
+        options: ["Certo", "Errado"], 
+        correct: 0, 
+        help: "Troca do objeto: devia dinheiro, pagou com um carro.", 
+        law: "Art. 356. O credor pode consentir em receber prestação diversa da que lhe é devida.", 
+        art: "Art. 356, CC" 
+    },
+    { 
+        level: "medium", 
+        q: "A novação por substituição do devedor pode ser efetuada sem o consentimento deste?", 
+        options: ["Não, nunca.", "Sim, por expromissão.", "Apenas judicialmente.", "Apenas se o devedor for incapaz."], 
+        correct: 1, 
+        help: "A expromissão é a 'surpresa' para o devedor original.", 
+        law: "Art. 362. A novação por substituição do devedor pode ser efetuada independentemente de consentimento deste.", 
+        art: "Art. 362, CC" 
+    },
+    { 
+        level: "easy", 
+        q: "Dívidas de jogo podem ser objeto de compensação legal?", 
+        options: ["Sim", "Não, por não serem exigíveis."], 
+        correct: 1, 
+        help: "Para compensar por lei, a dívida deve ser líquida, vencida e exigível.", 
+        law: "Art. 369. A compensação efetua-se entre dívidas líquidas, vencidas e de coisas fungíveis.", 
+        art: "Art. 369, CC" 
+    },
+    { 
+        level: "hard", 
+        q: "Na imputação do pagamento, se o devedor não declarar qual dívida quer pagar, a escolha cabe ao:", 
+        options: ["Juiz", "Credor", "Ministério Público", "Ninguém (a dívida não quita)"], 
+        correct: 1, 
+        help: "A preferência é do devedor, mas se ele calar, o credor decide no recibo.", 
+        law: "Art. 352/353. Se o devedor não fizer a indicação, e aceitar a quitação de uma delas, não terá direito a reclamar contra a imputação feita pelo credor...", 
+        art: "Art. 353, CC" 
+    }
+];
+
+let cur = 0, ok = 0, err = 0;
+
+function render() {
+    const q = quizData[cur];
+    document.getElementById('quiz-area').innerHTML = `
+        <div class="card">
+            <span class="difficulty-badge ${q.level}">${q.level}</span>
+            <div class="question-text">${q.q}</div>
+            <div class="options-grid">${q.options.map((o, i) => `<button class="option" onclick="check(${i})">${o}</button>`).join('')}</div>
+            <div class="extra-btns">
+                <button class="btn-tool btn-help" onclick="toggle('h')">💡 Dica Acadêmica</button>
+                <button class="btn-tool btn-law" onclick="toggle('l')">⚖️ Lei Seca</button>
+            </div>
+            <div id="h" class="info-content"><i>${q.help}</i></div>
+            <div id="l" class="info-content law-text"><b>${q.art}:</b><br>${q.law}</div>
+            <div id="fb" class="feedback"></div>
+            <button id="next-btn" onclick="next()">Próxima Questão</button>
+        </div>`;
+}
+
+window.toggle = (id) => {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+window.check = (idx) => {
+    const q = quizData[cur], fb = document.getElementById('fb');
+    document.querySelectorAll('.option').forEach(b => b.disabled = true);
+    fb.style.display = 'block';
+    if(idx === q.correct) {
+        ok++; fb.className = 'feedback correct'; fb.innerHTML = `<b>Correto!</b>`;
+    } else {
+        err++; fb.className = 'feedback incorrect'; fb.innerHTML = `<b>Errado!</b> A resposta é: ${q.options[q.correct]}`;
+    }
+    document.getElementById('score-correct').innerText = ok;
+    document.getElementById('score-wrong').innerText = err;
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+window.next = () => {
+    cur++;
+    if(cur < quizData.length) {
+        document.getElementById('progress').style.width = (cur/quizData.length*100)+'%';
+        document.getElementById('current-q').innerText = cur+1;
+        render();
+    } else {
+        document.getElementById('quiz-area').style.display = 'none';
+        const fs = document.getElementById('final-screen'); fs.style.display = 'block';
+        document.getElementById('final-stats').innerText = `Acertos: ${ok} | Erros: ${err}`;
+        let m = ok >= 8 ? "Excelente domínio do Direito das Obrigações!" : "Continue revisando os artigos do Código Civil!";
+        document.getElementById('orientation').innerHTML = `<b>Nota do Wallace:</b> ${m}`;
+    }
+}
+
+render();
+</script>
+</body>
+</html>
