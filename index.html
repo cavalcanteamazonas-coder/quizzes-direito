@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Acadêmico | Wallace Cavalcante</title>
+    <title>QUIZ ACADÊMICO | Wallace Cavalcante</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,14 +12,10 @@
             --bg: #f8f9fa;
             --text: #2c3e50;
             --white: #ffffff;
+            --warning: #f39c12;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -38,20 +34,28 @@
             padding: 40px 20px;
             text-align: center;
             border-bottom: 5px solid var(--accent);
-            margin-bottom: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         header h1 {
-            font-size: 1.8rem;
-            letter-spacing: -1px;
+            font-size: 2rem;
+            letter-spacing: 1px;
             margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
-        header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            font-weight: 400;
+        .disclaimer {
+            width: 90%;
+            max-width: 500px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 0.85rem;
+            text-align: center;
+            line-height: 1.4;
         }
 
         .container {
@@ -60,124 +64,130 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             padding-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #95a5a6;
+            text-transform: uppercase;
+            margin-top: 15px;
+            letter-spacing: 1px;
         }
 
         .menu-card {
             background: var(--white);
             text-decoration: none;
             color: inherit;
-            padding: 25px;
-            border-radius: 20px;
+            padding: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
-            gap: 20px;
-            transition: all 0.3s ease;
+            gap: 15px;
+            transition: all 0.2s ease;
             border: 1px solid #eee;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
 
-        .menu-card:active {
-            transform: scale(0.96);
-            background: #fdfdfd;
-        }
+        .menu-card:active { transform: scale(0.97); }
 
         .icon-box {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: #f0f2f5;
-            border-radius: 15px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             flex-shrink: 0;
         }
 
-        .content-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-box h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .content-box p {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            line-height: 1.3;
-        }
+        .content-box h2 { font-size: 1rem; color: var(--primary); }
+        .content-box p { font-size: 0.8rem; color: #7f8c8d; }
 
         .badge {
-            align-self: flex-start;
+            display: inline-block;
             background: var(--accent);
             color: var(--primary);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 800;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             text-transform: uppercase;
         }
 
+        .locked { opacity: 0.6; cursor: not-allowed; border-style: dashed; }
+        .locked .badge { background: #bdc3c7; color: #fff; }
+
         footer {
-            padding: 30px;
+            padding: 20px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #95a5a6;
-            width: 100%;
         }
 
-        footer strong {
-            color: var(--primary);
-        }
-
-        /* Efeito visual de separação por matéria */
-        .penal-border { border-left: 6px solid #e74c3c; }
-        .civil-border { border-left: 6px solid #3498db; }
-
+        .penal-border { border-left: 5px solid #e74c3c; }
+        .civil-border { border-left: 5px solid #3498db; }
+        .const-border { border-left: 5px solid #f1c40f; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Portal de Estudos Jurídicos</h1>
-    <p>Simulados Interativos para Acadêmicos de Direito</p>
+    <h1>QUIZ ACADÊMICO</h1>
+    <p>Ferramenta de Apoio ao Estudo Jurídico</p>
 </header>
+
+<div class="disclaimer">
+    <strong>⚠️ ATENÇÃO:</strong> Este material é exclusivo para <strong>fixação e auxílio acadêmico</strong>. O conteúdo aqui exposto não substitui as aulas, a bibliografia oficial e as orientações dadas pelo professor em sala.
+</div>
 
 <div class="container">
     
-    <!-- Link para Direito Penal -->
+    <div class="section-title">Exercícios de Fixação</div>
+
+    <!-- Direito Penal -->
     <a href="penal/index.html" class="menu-card penal-border">
         <div class="icon-box">⚖️</div>
         <div class="content-box">
             <span class="badge">Disponível</span>
             <h2>Direito Penal</h2>
-            <p>Dosimetria da Pena, Art. 59, 68 e Súmulas dos Tribunais Superiores.</p>
+            <p>Dosimetria da Pena (30 Questões)</p>
         </div>
     </a>
 
-    <!-- Link para Direito Civil -->
+    <!-- Direito Civil -->
     <a href="civil/index.html" class="menu-card civil-border">
         <div class="icon-box">🏠</div>
         <div class="content-box">
             <span class="badge">Disponível</span>
             <h2>Direito Civil</h2>
-            <p>Transmissão e Extinção das Obrigações (Art. 286 a 380).</p>
+            <p>Direito das Obrigações (Art. 286 a 380)</p>
         </div>
     </a>
 
-    <!-- Espaço para futuras matérias (Exemplo desativado) -->
-    <div class="menu-card" style="opacity: 0.5; border-style: dashed;">
+    <!-- Direito Constitucional -->
+    <div class="menu-card const-border locked">
         <div class="icon-box">📜</div>
         <div class="content-box">
-            <span class="badge" style="background: #bdc3c7;">Em breve</span>
+            <span class="badge">Em breve</span>
             <h2>Direito Constitucional</h2>
-            <p>Controle de Constitucionalidade e Remédios.</p>
+            <p>Controle de Constitucionalidade e Direitos Fundamentais.</p>
+        </div>
+    </div>
+
+    <div class="section-title">Avaliações</div>
+
+    <!-- Prova Simulada -->
+    <div class="menu-card locked">
+        <div class="icon-box">⏱️</div>
+        <div class="content-box">
+            <span class="badge">Em breve</span>
+            <h2>Prova Simulada</h2>
+            <p>Página em construção. Aguarde as instruções.</p>
         </div>
     </div>
 
@@ -185,7 +195,7 @@
 
 <footer>
     <p>Desenvolvido por <strong>Wallace Cavalcante</strong></p>
-    <p>Manaus/AM • 2026</p>
+    <p>Acadêmico de Direito • 2026</p>
 </footer>
 
 </body>
