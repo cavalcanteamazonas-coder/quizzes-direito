@@ -12,7 +12,9 @@
             --bg: #f8f9fa;
             --text: #2c3e50;
             --white: #ffffff;
-            --warning: #f39c12;
+            --penal: #e74c3c;
+            --civil: #27ae60;
+            --const: #8e44ad;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -34,158 +36,127 @@
             padding: 40px 20px;
             text-align: center;
             border-bottom: 5px solid var(--accent);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        header h1 {
-            font-size: 2rem;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .disclaimer {
-            width: 90%;
-            max-width: 500px;
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            color: #856404;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-size: 0.85rem;
-            text-align: center;
-            line-height: 1.4;
         }
 
         .container {
-            width: 90%;
+            width: 100%;
             max-width: 500px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 40px;
+            padding: 20px;
         }
 
         .section-title {
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 800;
-            color: #95a5a6;
             text-transform: uppercase;
-            margin-top: 15px;
             letter-spacing: 1px;
+            color: #7f8c8d;
+            margin: 25px 0 15px 5px;
         }
 
         .menu-card {
             background: var(--white);
-            text-decoration: none;
-            color: inherit;
+            border-radius: 16px;
             padding: 20px;
-            border-radius: 18px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            transition: all 0.2s ease;
-            border: 1px solid #eee;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-left: 6px solid transparent;
         }
 
-        .menu-card:active { transform: scale(0.97); }
+        .menu-card:active { transform: scale(0.98); }
+
+        /* Cores das Bordas */
+        .penal-border { border-left-color: var(--penal); }
+        .civil-border { border-left-color: var(--civil); }
+        .const-border { border-left-color: var(--const); }
 
         .icon-box {
             width: 50px;
             height: 50px;
-            background: #f0f2f5;
             border-radius: 12px;
+            background: #f1f2f6;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
+            font-size: 24px;
+            margin-right: 15px;
         }
 
-        .content-box h2 { font-size: 1rem; color: var(--primary); }
-        .content-box p { font-size: 0.8rem; color: #7f8c8d; }
+        .content-box h2 { font-size: 1.1rem; margin-bottom: 4px; }
+        .content-box p { font-size: 0.85rem; color: #7f8c8d; }
 
         .badge {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--primary);
-            font-size: 0.6rem;
+            font-size: 10px;
             font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 4px;
+            padding: 3px 8px;
+            border-radius: 20px;
             text-transform: uppercase;
+            margin-bottom: 5px;
+            display: inline-block;
         }
 
-        .locked { opacity: 0.6; cursor: not-allowed; border-style: dashed; }
-        .locked .badge { background: #bdc3c7; color: #fff; }
+        .badge-available { background: #e1f5fe; color: #0288d1; }
+        .badge-locked { background: #eee; color: #999; }
+
+        .locked { opacity: 0.6; pointer-events: none; }
 
         footer {
-            padding: 20px;
+            margin-top: auto;
+            padding: 30px;
             text-align: center;
             font-size: 0.75rem;
-            color: #95a5a6;
+            color: #bdc3c7;
         }
-
-        .penal-border { border-left: 5px solid #e74c3c; }
-        .civil-border { border-left: 5px solid #3498db; }
-        .const-border { border-left: 5px solid #f1c40f; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>QUIZ ACADÊMICO</h1>
-    <p>Ferramenta de Apoio ao Estudo Jurídico</p>
+    <h1 style="font-weight: 800; letter-spacing: -1px;">QUIZ ACADÊMICO</h1>
+    <p style="color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-top: 5px;">Portal Wallace Cavalcante</p>
 </header>
-
-<div class="disclaimer">
-    <strong>⚠️ ATENÇÃO:</strong> Este material é exclusivo para <strong>fixação e auxílio acadêmico</strong>. O conteúdo aqui exposto não substitui as aulas, a bibliografia oficial e as orientações dadas pelo professor em sala.
-</div>
 
 <div class="container">
     
-    <div class="section-title">Exercícios de Fixação</div>
+    <div class="section-title">Matérias Disponíveis</div>
 
-    <!-- Direito Penal -->
+    <a href="processo-legislativo/index.html" class="menu-card const-border">
+        <div class="icon-box">📜</div>
+        <div class="content-box">
+            <span class="badge badge-available">Disponível</span>
+            <h2>Direito Constitucional</h2>
+            <p>Processo Legislativo (100 Questões + Diagnóstico)</p>
+        </div>
+    </a>
+
     <a href="penal/index.html" class="menu-card penal-border">
         <div class="icon-box">⚖️</div>
         <div class="content-box">
-            <span class="badge">Disponível</span>
+            <span class="badge badge-available">Disponível</span>
             <h2>Direito Penal</h2>
             <p>Dosimetria da Pena (30 Questões)</p>
         </div>
     </a>
 
-    <!-- Direito Civil -->
     <a href="civil/index.html" class="menu-card civil-border">
         <div class="icon-box">🏠</div>
         <div class="content-box">
-            <span class="badge">Disponível</span>
+            <span class="badge badge-available">Disponível</span>
             <h2>Direito Civil</h2>
             <p>Direito das Obrigações (Art. 286 a 380)</p>
         </div>
     </a>
 
-    <!-- Direito Constitucional -->
-    <div class="menu-card const-border locked">
-        <div class="icon-box">📜</div>
-        <div class="content-box">
-            <span class="badge">Em breve</span>
-            <h2>Direito Constitucional</h2>
-            <p>Controle de Constitucionalidade e Direitos Fundamentais.</p>
-        </div>
-    </div>
-
     <div class="section-title">Avaliações</div>
 
-    <!-- Prova Simulada -->
     <div class="menu-card locked">
         <div class="icon-box">⏱️</div>
         <div class="content-box">
-            <span class="badge">Em breve</span>
+            <span class="badge badge-locked">Em breve</span>
             <h2>Prova Simulada</h2>
             <p>Página em construção. Aguarde as instruções.</p>
         </div>
@@ -194,8 +165,8 @@
 </div>
 
 <footer>
-    <p>Desenvolvido por <strong>Wallace Cavalcante</strong></p>
-    <p>Acadêmico de Direito • 2026</p>
+    Portal Acadêmico | Wallace Cavalcante &copy; 2026<br>
+    Desenvolvido para auxílio aos acadêmicos de Direito.
 </footer>
 
 </body>
