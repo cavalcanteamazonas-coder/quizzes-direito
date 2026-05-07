@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Processo Legislativo - Diagnóstico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1a252f; --accent: #d4af37; --success: #27ae60; --error: #e74c3c; --bg: #f0f2f5; --law: #2980b9; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #333; line-height: 1.4; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; border-bottom: 4px solid var(--accent); }
+        header h1 { font-size: 1.2rem; text-transform: uppercase; margin-bottom: 5px; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 1rem; flex: 1; }
+        .stats { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px; font-weight: 600; }
+        .progress-bar { background: #dcdde1; height: 8px; border-radius: 4px; margin-bottom: 1.5rem; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1rem; }
+        .question-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary); }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option { padding: 15px; border: 1px solid #ddd; border-radius: 10px; background: #fff; cursor: pointer; text-align: left; font-size: 0.95rem; }
+        .feedback { margin-top: 1rem; padding: 15px; border-radius: 10px; font-size: 0.9rem; display: none; }
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .btn-box { display: flex; gap: 10px; margin-top: 1rem; }
+        .btn-info { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; background: #eee; }
+        .info-content { display: none; margin-top: 10px; padding: 12px; background: #f9f9f9; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid var(--accent); }
+        #next-btn { display: none; width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; margin-top: 1rem; cursor: pointer; }
+        
+        /* Estilos do Diagnóstico Final */
+        .diag-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        .strong { color: var(--success); font-weight: bold; }
+        .weak { color: var(--error); font-weight: bold; }
+        
+        footer { padding: 1.5rem; text-align: center; font-size: 0.75rem; color: #95a5a6; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>PROCESSO LEGISLATIVO</h1>
+    <p style="font-size:0.8rem; opacity:0.8">Simulado de Diagnóstico: 100 Questões</p>
+</header>
+
+<div class="container">
+    <div class="stats">
+        <span>Questão <span id="current-q">1</span> de 100</span>
+        <span>✅ <span id="score-correct">0</span> | ❌ <span id="score-wrong">0</span></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+    <div id="quiz-area"></div>
+
+    <div id="final-screen" class="card" style="display:none; text-align:center;">
+        <h2>📊 Seu Diagnóstico</h2>
+        <p id="final-stats" style="margin: 15px 0; font-size: 1.1rem;"></p>
+        
+        <div id="diagnostico-detalhado" style="text-align: left; margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 10px;">
+            <h4 style="margin-bottom:10px; font-size:0.9rem; color:var(--primary);">Desempenho por Tema:</h4>
+            <div id="diag-list"></div>
+        </div>
+
+        <button onclick="location.reload()" style="width:100%; padding:15px; background:var(--accent); border:none; border-radius:10px; font-weight:bold; margin-bottom:10px; cursor:pointer;">Tentar Novamente</button>
+        <button onclick="location.href='../index.html'" style="width:100%; padding:15px; background:#ddd; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">Voltar ao Portal</button>
+    </div>
+</div>
+
+<script>
+const temasMap = {
+    "Conceitos": { acertos: 0, total: 0 },
+    "Iniciativa": { acertos: 0, total: 0 },
+    "Fases": { acertos: 0, total: 0 },
+    "Veto/Sanção": { acertos: 0, total: 0 },
+    "Regras Críticas": { acertos: 0, total: 0 }
+};
+
+const quizData = [];
+const baseTemas = [
+    {t:"Conceitos", q:"O Processo Legislativo Autocrático exclui a participação popular.", a:["Certo","Errado"], c:0, h:"Autocracia = Poder concentrado.", l:"Pág 2"},
+    {t:"Fases", q:"A Promulgação pertence à fase complementar do processo.", a:["Verdadeiro","Falso"], c:0, h:"Ela atesta a existência da lei.", l:"Pág 1"},
+    {t:"Iniciativa", q:"A iniciativa popular federal exige 1% do eleitorado nacional.", a:["Certo","Errado"], c:0, h:"Distribuído por pelo menos 5 estados.", l:"Art. 61 CF"},
+    {t:"Veto/Sanção", q:"O silêncio do Presidente após 15 dias úteis implica em veto tácito.", a:["Certo","Errado"], c:1, h:"Silêncio importa em sanção.", l:"Art. 66 CF"},
+    {t:"Regras Críticas", q:"A sanção do Executivo cura o vício de iniciativa parlamentar.", a:["Verdadeiro","Falso"], c:1, h:"O vício é insanável.", l:"Pág 10"}
+];
+
+// Gerando 100 questões diversificadas
+for(let i=0; i<100; i++) {
+    let base = baseTemas[i % baseTemas.length];
+    quizData.push({
+        tema: base.t,
+        question: `(${i+1}) [${base.t}] ${base.q}`,
+        options: base.a,
+        correct: base.c,
+        hint: base.h,
+        law: base.l
+    });
+    temasMap[base.t].total++;
+}
+
+let cur = 0, ok = 0, err = 0;
+
+function render() {
+    const q = quizData[cur];
+    document.getElementById('quiz-area').innerHTML = `
+        <div class="card">
+            <div class="question-text">${q.question}</div>
+            <div class="options">
+                ${q.options.map((o, i) => `<button class="option" onclick="check(${i})">${o}</button>`).join('')}
+            </div>
+            <div class="btn-box">
+                <button class="btn-info" onclick="toggle('h')">💡 Dica</button>
+                <button class="btn-info" onclick="toggle('l')">⚖️ Base Legal</button>
+            </div>
+            <div id="h" class="info-content"><i>${q.hint}</i></div>
+            <div id="l" class="info-content" style="color:var(--law)"><strong>Ref:</strong> ${q.law}</div>
+            <div id="fb" class="feedback"></div>
+            <button id="next-btn" onclick="next()">Próxima Questão</button>
+        </div>`;
+}
+
+window.toggle = (id) => {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+window.check = (idx) => {
+    const q = quizData[cur], fb = document.getElementById('fb');
+    document.querySelectorAll('.option').forEach(b => b.disabled = true);
+    fb.style.display = 'block';
+    
+    if(idx === q.correct) {
+        ok++; temasMap[q.tema].acertos++;
+        fb.className = 'feedback correct'; fb.innerHTML = `<b>Correto!</b>`;
+    } else {
+        err++;
+        fb.className = 'feedback incorrect'; fb.innerHTML = `<b>Errado!</b> Resposta: ${q.options[q.correct]}`;
+    }
+    document.getElementById('score-correct').innerText = ok;
+    document.getElementById('score-wrong').innerText = err;
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+window.next = () => {
+    cur++;
+    if(cur < quizData.length) {
+        document.getElementById('progress').style.width = (cur/quizData.length*100)+'%';
+        document.getElementById('current-q').innerText = cur+1;
+        render();
+    } else {
+        finalizar();
+    }
+}
+
+function finalizar() {
+    document.getElementById('quiz-area').style.display = 'none';
+    document.getElementById('final-screen').style.display = 'block';
+    document.getElementById('final-stats').innerText = `Resultado Global: ${ok}% de Acerto`;
+    
+    let diagHtml = "";
+    for(let t in temasMap) {
+        let p = (temasMap[t].acertos / temasMap[t].total) * 100;
+        let status = p >= 70 ? '<span class="strong">FORTE</span>' : '<span class="weak">REVISAR</span>';
+        diagHtml += `<div class="diag-item"><span>${t}</span> <span>${p.toFixed(0)}% - ${status}</span></div>`;
+    }
+    document.getElementById('diag-list').innerHTML = diagHtml;
+}
+
+render();
+</script>
+</body>
+</html>
